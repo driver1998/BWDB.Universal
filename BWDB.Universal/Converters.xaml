@@ -1,0 +1,23 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BWDB.Universal">
+    
+    <local:BuildTagStripConverter x:Name="BuildTagStripConverter"/>
+    <local:VersionStripConverter x:Name="VersionStripConverter"/>
+    <local:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
+    <local:BooleanReverseToVisibilityConverter x:Name="BooleanReverseToVisibilityConverter"/>
+    <local:BooleanReverseConverter x:Name="BooleanReverseConverter"/>
+    <local:VisibilityReverseConverter x:Name="VisibilityReverseConverter"/>
+
+    <local:MultiLineConverter x:Key="MultiLineConverter"/>
+    <local:MultiLineConverterForLanguageField x:Key="MultiLineConverterForLanguage"/>
+    <local:MultiLineConverterForProductKey x:Key="MultiLineConverterForProductKey"/>
+    <local:CodenameAndStageConverter x:Key="CodenameAndStageConverter"/>
+    <local:MoreButtonVisibilityConverter x:Key="MoreButtonVisibilityConverter"/>
+
+    <local:SplitViewThemeConverter x:Key="SplitViewThemeConverter"/>
+
+    <local:ImageHeightRawPixelConverter x:Key="ImageHeightRawPixelConverter"/>
+    <local:ImageWidthRawPixelConverter x:Key="ImageWidthRawPixelConverter"/>
+</ResourceDictionary>

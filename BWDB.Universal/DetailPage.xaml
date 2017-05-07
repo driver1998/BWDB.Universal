@@ -1,0 +1,254 @@
+﻿<Page x:Name="buildPage"
+    x:Class="BWDB.Universal.DetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BWDB.Universal"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" SizeChanged="buildPage_SizeChanged">
+
+    <Grid >
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualState>
+                    <VisualState.StateTriggers >
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters >
+                        <Setter Target="GalleryGrid.(RelativePanel.Below)" Value="InformationPanel"/>
+                        <Setter Target="GalleryGrid.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="GalleryGrid.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="ScreenshotView.(ScrollViewer.VerticalScrollMode)" Value="Disabled"/>
+                        <Setter Target="InformationPanel.Width" Value="Auto"/>
+                        <Setter Target="InformationPanel.(RelativePanel.Below)" Value=""/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers >
+                        <AdaptiveTrigger MinWindowWidth="960"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters >
+                        <Setter Target="GalleryGrid.(RelativePanel.LeftOf)" Value="InformationPanel"/>
+                        <Setter Target="GalleryGrid.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="GalleryGrid.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="GalleryGrid.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+                        <Setter Target="ScreenshotView.(ScrollViewer.VerticalScrollMode)" Value="Auto"/>
+                        <Setter Target="InformationPanel.(RelativePanel.Below)" Value=""/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="InformationPanel.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="DeviceFamilyState">
+                <VisualState x:Name="Desktop">
+                    <VisualState.StateTriggers>
+                        <local:DeviceFamilyTrigger DeviceFamily="Windows.Desktop"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters >
+                        <Setter Target="ExportButton.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Phone">
+                    <VisualState.StateTriggers>
+                        <local:DeviceFamilyTrigger DeviceFamily="Windows.Mobile"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock FontSize="36" x:Name="VersionLabel" FontWeight="Bold" Margin="20,10,0,0" Text="{Binding ElementName=buildPage, Path=CurrentBuild.Version}" TextWrapping="Wrap"/>
+                    <TextBlock FontSize="14" x:Name="ProductNameLabel" Margin="20,10,0,0" Text="{Binding ElementName=buildPage, Path=CurrentBuild.ProductName}" TextWrapping="Wrap"/>
+                    <TextBlock FontSize="14" x:Name="Label" Text="{Binding ElementName=buildPage, Path=CurrentBuild, Converter={StaticResource CodenameAndStageConverter}}" TextWrapping="Wrap" Margin="20,0,0,10"/>
+                    <AppBarButton Margin="6,0,0,0" Label="共享" x:Name="ShareButton" Click="ShareButton_Click" Style="{StaticResource AppBarButtonStyle1}" Width="100" Height="48">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </StackPanel>
+
+
+                <RelativePanel Grid.Row="1" Margin="20,20,20,0">
+                    <Grid x:Name="GalleryGrid" Margin="0,5,5,5">
+                        <StackPanel>
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}">图库</TextBlock>
+                            <TextBlock Visibility="{Binding ElementName=ScreenshotView, Path=Visibility, Converter={StaticResource VisibilityReverseConverter}}">暂无图片</TextBlock>
+
+                           
+                            <GridView x:Name="ScreenshotView" SelectionChanged="ScreenshotView_SelectionChanged">
+                                <GridView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid MaxHeight="120" MaxWidth="150" MinWidth="80" MinHeight="60">
+                                            <Image x:Name="image" Source="{Binding Thumbnail}" Stretch="UniformToFill" HorizontalAlignment="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+                                <GridView.ItemContainerStyle >
+                                    <Style TargetType="GridViewItem">
+                                        <Setter Property="Margin" Value="0,5,5,5"/>
+                                    </Style>
+                                </GridView.ItemContainerStyle>
+                            </GridView>
+                           
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel x:Name="InformationPanel" Width="300">
+                        <StackPanel x:Name="BuildTagGrid"  Margin="0,5,0,5">
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,0,0">版本字符串</TextBlock>
+                            <TextBlock Text="{Binding ElementName=buildPage, Path=CurrentBuild.Buildtag}" />
+                        </StackPanel>
+                        <StackPanel x:Name="ArchGrid"  Margin="0,5,0,5">
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,0,0">架构</TextBlock>
+                            <TextBlock Text="{Binding ElementName=buildPage, Path=CurrentBuild.Architecture}"/>
+                        </StackPanel>
+                        <StackPanel x:Name="SKUGrid" Margin="0,5,0,5">
+                            <TextBlock x:Name="SKULabel" Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,10,0">版本</TextBlock>
+                            <TextBlock MaxLines="7" x:Name="SKUText"
+                                       Text="{Binding ElementName=buildPage, Path=CurrentBuild.SKU, Converter={StaticResource MultiLineConverter}}"/>
+                            <Button x:Name="SKUMoreButton"  Background="#00FFFFFF" Style="{StaticResource TextBlockButtonStyle}" Visibility="{Binding ElementName=SKUText, Path=Text, Converter={StaticResource MoreButtonVisibilityConverter}}" Padding="0,5,0,5" Click="More_Click">查看更多...</Button>
+                        </StackPanel>
+                        <StackPanel x:Name="LanguageGrid"  Margin="0,5,0,5">
+                            <TextBlock x:Name="LanguageLabel" Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,10,0">语言</TextBlock>
+                            <TextBlock MaxLines="5" x:Name="LanguageText"
+                                       Text="{Binding ElementName=buildPage, Path=CurrentBuild.Language, Converter={StaticResource MultiLineConverterForLanguage}}"/>
+                            <Button x:Name="LanguageMoreButton" Background="#00FFFFFF" Style="{StaticResource TextBlockButtonStyle}" Visibility="{Binding ElementName=LanguageText, Path=Text, Converter={StaticResource MoreButtonVisibilityConverter}}" Padding="0,5,0,5" Click="More_Click" >查看更多...</Button>
+                        </StackPanel>
+                        <StackPanel x:Name="DetailsGrid"  Margin="0,5,0,5">
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,10,0">安装信息</TextBlock>
+                            <Button Style="{StaticResource TextBlockButtonStyle}" Background="#00FFFFFF" Padding="0,5,0,5" Click="InstallInformation_Click" >点击查看...</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </RelativePanel>
+            </Grid>
+        </ScrollViewer>
+
+        <ContentDialog x:Name="DetailDialog" MaxWidth="350" Style="{StaticResource ContentDialogStyle1}">
+            <ContentDialog.Content >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <AppBarButton x:Name="DetailDialogCloseButton" Width="48" HorizontalAlignment="Right" Click="AppBarButton_Click" Icon="Cancel"/>
+
+                    <ScrollViewer Grid.Row="1"  HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
+                        <Grid Margin="20,0,20,20">
+                            <Grid.RowDefinitions >
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="DetailDialogHeaderBlock" Style="{ThemeResource BaseTextBlockStyle}" Grid.Row="0"/>
+                            <TextBlock x:Name="DetailDialogTextBlock" Grid.Row="1" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </ContentDialog.Content>
+        </ContentDialog>
+
+        <ContentDialog x:Name="InstallationDialog" Style="{StaticResource ContentDialogStyle1}"
+                       Opened="InstallationDialog_Opened" Closed="InstallationDialog_Closed">
+            <ContentDialog.Content >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <AppBarButton x:Name="InstallationDialogCloseButton" Width="48" HorizontalAlignment="Right" Click="AppBarButton_Click" Icon="Cancel"/>
+
+                    <ScrollViewer  Grid.Row="1"  HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20,0,20,20">
+
+                            <StackPanel Margin="0,5,0,5">
+                                <TextBlock Text="BIOS 日期" Style="{ThemeResource BaseTextBlockStyle}" Grid.Row="0"/>
+                                <TextBlock x:Name="BIOSDateTextBlock" Text="{Binding ElementName=buildPage, Path=CurrentBuild.BIOSDate}" Grid.Row="1" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
+                                <Button x:Name="ExportButton" Visibility="Collapsed" Style="{StaticResource TextBlockButtonStyle}" Padding="0,5,0,5">导出到 VMGuide...</Button>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,5,0,5">
+                                <TextBlock Text="产品密钥" Style="{ThemeResource BaseTextBlockStyle}" Grid.Row="0"/>
+                                <TextBlock x:Name="SerialTextBlock" Text="{Binding ElementName=buildPage, Path=CurrentBuild.SerialNumber, Converter={StaticResource MultiLineConverterForProductKey}}" Grid.Row="1" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,5,0,5">
+                                <TextBlock Text="注意事项" Style="{ThemeResource BaseTextBlockStyle}" Grid.Row="0"/>
+                                <TextBlock x:Name="FixesTextBlock" Text="{Binding ElementName=buildPage, Path=CurrentBuild.Fixes}" Grid.Row="1" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
+
+                            </StackPanel>
+                   
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </ContentDialog.Content>
+        </ContentDialog>
+
+
+        <ContentDialog Opened="ScreenshotDialog_Opened" Closed="ScreenshotDialog_Closed"
+                       Margin="0" x:Name="ScreenshotDialog" Style="{StaticResource ContentDialogStyle1}" Grid.Row="0">
+            <Grid x:Name="ScreenshotGrid" x:FieldModifier="Public">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="48"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <FlipView Background="{ThemeResource SystemControlBackgroundAltHighBrush}"  x:Name="ScreenshotFlipView" Grid.Row="0" Grid.RowSpan="2"
+                          SelectionChanged="ScreenshotFlipView_SelectionChanged"
+                          ItemsSource="{Binding ElementName=ScreenshotView, Path=ItemsSource}">
+                    <FlipView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid PointerWheelChanged="Grid_PointerWheelChanged">
+                                <ScrollViewer x:Name="scrollViewer" ZoomMode="Enabled"
+                                              HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" 
+                                              VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" >
+                                    
+                                    <Grid MaxHeight="{Binding ElementName=scrollViewer, Path=ViewportHeight, Mode=TwoWay}"
+                                          MaxWidth="{Binding ElementName=scrollViewer, Path=ViewportWidth, Mode=TwoWay}"
+                                          Width="{Binding Image, Converter={StaticResource ImageWidthRawPixelConverter}}"
+                                          Height="{Binding Image, Converter={StaticResource ImageHeightRawPixelConverter}}">
+
+                                        <Image PointerWheelChanged="image_PointerWheelChanged" 
+                                               DoubleTapped="image_DoubleTapped" 
+                                               ManipulationDelta="image_ManipulationDelta" PointerPressed="image_PointerPressed"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               x:Name="image" Source="{Binding Image}" Stretch="Uniform"/>
+                                    </Grid>
+
+                                </ScrollViewer>
+                            </Grid>
+                        </DataTemplate>
+                    </FlipView.ItemTemplate>
+                    
+                </FlipView>
+
+                <Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundAltMediumHighBrush}" x:Name="ScreenshotToolbar">
+                    <TextBlock Text="{Binding ElementName=ScreenshotFlipView, Path=SelectedItem.Description}"
+                               Margin="20,0,0,0" VerticalAlignment="Center" 
+                               Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}"/>
+                    <AppBarButton x:Name="ScreenshotDialogCloseButton" Width="48" 
+                                  HorizontalAlignment="Right" Click="AppBarButton_Click" Icon="Cancel"/>
+                    <AppBarButton x:Name="ScreenshotShareButton" Label="共享" Click="ShareButton_Click"
+                                  HorizontalAlignment="Right" Margin="0,0,48,0" Style="{StaticResource AppBarButtonStyle1}" Width="100" Height="48">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </Grid>
+            </Grid>
+
+        </ContentDialog>
+    </Grid>
+
+
+</Page>

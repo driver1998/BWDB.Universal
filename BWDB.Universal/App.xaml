@@ -1,0 +1,19 @@
+﻿<Application
+    x:Class="BWDB.Universal.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BWDB.Universal">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="BWDB_AccentColor">#FF184689</Color>
+            <Color x:Key="BWDB_MediumAccentColor">#CC184689</Color>
+            
+            <SolidColorBrush x:Key="BWDB_AccentBrush" Color="{StaticResource BWDB_AccentColor}" />
+            <SolidColorBrush x:Key="BWDB_MediumAccentBrush" Color="{StaticResource BWDB_MediumAccentColor}" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+                <ResourceDictionary Source="Converters.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
