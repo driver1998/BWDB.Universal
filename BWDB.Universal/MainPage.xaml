@@ -7,11 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="Main"
     mc:Ignorable="d" 
-    Loaded="Page_Loaded" SizeChanged="Page_SizeChanged"
+    Loaded="Page_Loaded"
     >
 
     <!--Grid Background="#fffafafa"-->
-    <Grid>
+    <Grid SizeChanged="Page_SizeChanged">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveState"  x:FieldModifier="Public" CurrentStateChanged="AdaptiveState_CurrentStateChanged">
                 <VisualState x:Name="PhoneUI"  x:FieldModifier="Public">
@@ -127,6 +127,7 @@
                                 <RowDefinition Height="48"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
+                           
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -142,43 +143,57 @@
                                 <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" PlaceholderText="搜索" BorderThickness="0" RequestedTheme="Light"
                                          Visibility="{Binding ElementName=SearchToggle, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle1}"/>
                             </Grid>
-                            <SemanticZoom Grid.Row="1">
-                                <SemanticZoom.ZoomedInView >
-                                    <ListView x:Name="BuildZoomInListView" ItemClick="BuildZoomInListView_ItemClick" IsItemClickEnabled="True" SelectionMode="None">
-                                        <ListView.ItemContainerStyle >
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="Margin" Value="0"/>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                        <ListView.ItemTemplate >
-                                            <DataTemplate>
-                                                <StackPanel Width="300" Height="65" Margin="0" Padding="0,10,0,10">
-                                                    <TextBlock x:Name="TextBlock_Version" Text="{Binding Version, Converter={StaticResource VersionStripConverter}}" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" />
-                                                    <TextBlock x:Name="TextBlock_Buildtag" RelativePanel.Below="TextBlock_Version" Text="{Binding Buildtag, Converter={StaticResource BuildTagStripConverter}}" Style="{ThemeResource BodyTextBlockStyle}"/>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                        <ListView.GroupStyle>
-                                            <GroupStyle>
-                                                <GroupStyle.HeaderTemplate >
-                                                    <DataTemplate >
-                                                        <TextBlock Text="{Binding Key}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                                                    </DataTemplate>
-                                                </GroupStyle.HeaderTemplate >
-                                            </GroupStyle>
-                                        </ListView.GroupStyle>
-                                    </ListView>
-                                </SemanticZoom.ZoomedInView>
-                                <SemanticZoom.ZoomedOutView >
-                                    <ListView x:Name="BuildZoomOutListView">
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Group.Key}" Style="{ThemeResource BaseTextBlockStyle}" />
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </SemanticZoom.ZoomedOutView>
-                            </SemanticZoom>
+                            <Grid Grid.Row="1" >
+                                <SemanticZoom Grid.Row="1" Grid.Column="1">
+                                    <SemanticZoom.ZoomedInView >
+                                        <ListView x:Name="BuildZoomInListView" ItemClick="BuildZoomInListView_ItemClick" IsItemClickEnabled="True" SelectionMode="None"
+                                             ManipulationCompleted="ScrollViewer_ManipulationCompleted" ManipulationStarted="BuildZoomInListView_ManipulationStarted"  Background="#00000000"  >
+                                            <ListView.Template>
+                                                <ControlTemplate TargetType="ListView">
+                                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                                        <ScrollViewer  ManipulationMode="TranslateX" 
+                            x:Name="ScrollViewer" AutomationProperties.AccessibilityView="Raw" BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}" HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}" IsVerticalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsVerticalScrollChainingEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" TabNavigation="{TemplateBinding TabNavigation}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}">
+                                                            <ItemsPresenter x:Name="itemsPresenter" FooterTransitions="{TemplateBinding FooterTransitions}" FooterTemplate="{TemplateBinding FooterTemplate}" Footer="{TemplateBinding Footer}" HeaderTemplate="{TemplateBinding HeaderTemplate}" Header="{TemplateBinding Header}" HeaderTransitions="{TemplateBinding HeaderTransitions}" Padding="{TemplateBinding Padding}"/>
+
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </ListView.Template>
+                                            <ListView.ItemContainerStyle >
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+                                            <ListView.ItemTemplate >
+                                                <DataTemplate>
+                                                    <StackPanel Width="300" Height="65" Margin="0" Padding="0,10,0,10">
+                                                        <TextBlock x:Name="TextBlock_Version" Text="{Binding Version, Converter={StaticResource VersionStripConverter}}" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" />
+                                                        <TextBlock x:Name="TextBlock_Buildtag" RelativePanel.Below="TextBlock_Version" Text="{Binding Buildtag, Converter={StaticResource BuildTagStripConverter}}" Style="{ThemeResource BodyTextBlockStyle}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                            <ListView.GroupStyle>
+                                                <GroupStyle>
+                                                    <GroupStyle.HeaderTemplate >
+                                                        <DataTemplate >
+                                                            <TextBlock Text="{Binding Key}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                                                        </DataTemplate>
+                                                    </GroupStyle.HeaderTemplate >
+                                                </GroupStyle>
+                                            </ListView.GroupStyle>
+                                        </ListView>
+                                    </SemanticZoom.ZoomedInView>
+                                    <SemanticZoom.ZoomedOutView >
+                                        <ListView x:Name="BuildZoomOutListView">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Group.Key}" Style="{ThemeResource BaseTextBlockStyle}" />
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </SemanticZoom.ZoomedOutView>
+                                </SemanticZoom>
+                            </Grid>
                         </Grid>
                     </SplitView.Content>
                 </SplitView>
@@ -201,7 +216,8 @@
             
         </Grid>
 
-        <ContentDialog x:Name="SettingDialog" Style="{StaticResource ContentDialogStyle1}" FullSizeDesired="False">
+        <ContentDialog  Margin="0" x:Name="SettingDialog" Style="{StaticResource ContentDialogStyle1}" FullSizeDesired="False"
+                        Opened="Dialog_Opened" Closed="Dialog_Closed">
             <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="48"/>

@@ -196,7 +196,7 @@
 
 
         <ContentDialog Opened="ScreenshotDialog_Opened" Closed="ScreenshotDialog_Closed"
-                       Margin="0" x:Name="ScreenshotDialog" Style="{StaticResource ContentDialogStyle1}" Grid.Row="0">
+                       Margin="0" x:Name="ScreenshotDialog" Style="{StaticResource ContentDialogStyle1}">
             <Grid x:Name="ScreenshotGrid" x:FieldModifier="Public">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="48"/>
@@ -204,25 +204,26 @@
                 </Grid.RowDefinitions>
 
                 <FlipView Background="{ThemeResource SystemControlBackgroundAltHighBrush}"  x:Name="ScreenshotFlipView" Grid.Row="0" Grid.RowSpan="2"
-                          SelectionChanged="ScreenshotFlipView_SelectionChanged"
-                          ItemsSource="{Binding ElementName=ScreenshotView, Path=ItemsSource}">
+                          SelectionChanged="ScreenshotFlipView_SelectionChanged"  
+                          ItemsSource="{Binding ElementName=ScreenshotView, Path=ItemsSource}" >
                     <FlipView.ItemTemplate>
                         <DataTemplate>
                             <Grid PointerWheelChanged="Grid_PointerWheelChanged">
-                                <ScrollViewer x:Name="scrollViewer" ZoomMode="Enabled"
-                                              HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" 
-                                              VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" >
-                                    
+                                <ScrollViewer x:Name="scrollViewer" ZoomMode="Disabled" ManipulationMode="None"
+                                              HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" 
+                                              VerticalScrollBarVisibility="Auto" VerticalScrollMode="Disabled">
+
                                     <Grid MaxHeight="{Binding ElementName=scrollViewer, Path=ViewportHeight, Mode=TwoWay}"
                                           MaxWidth="{Binding ElementName=scrollViewer, Path=ViewportWidth, Mode=TwoWay}"
                                           Width="{Binding Image, Converter={StaticResource ImageWidthRawPixelConverter}}"
                                           Height="{Binding Image, Converter={StaticResource ImageHeightRawPixelConverter}}">
 
-                                        <Image PointerWheelChanged="image_PointerWheelChanged" 
-                                               DoubleTapped="image_DoubleTapped" 
+                                        <Image PointerWheelChanged="image_PointerWheelChanged" ManipulationCompleted="image_ManipulationCompleted"
+                                               DoubleTapped="image_DoubleTapped" ManipulationMode="TranslateX,TranslateY,Scale" 
                                                ManipulationDelta="image_ManipulationDelta" PointerPressed="image_PointerPressed"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               x:Name="image" Source="{Binding Image}" Stretch="Uniform"/>
+                                               x:Name="image" Source="{Binding Image}" Stretch="Uniform"
+                                               ScrollViewer.ZoomMode="Enabled"/>
                                     </Grid>
 
                                 </ScrollViewer>

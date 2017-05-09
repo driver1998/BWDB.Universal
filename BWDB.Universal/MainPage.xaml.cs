@@ -35,6 +35,7 @@ namespace BWDB.Universal
         public static MainPage CurrentPage;
         Compositor compositor;
         SpriteVisual topSprite;
+        bool isOpeningSplitView = false;
         Binding AdaptiveVisibilityBinding; //LeftFrame = !MainFrame
 
         static NotifyChanged<Product> currentProduct = new NotifyChanged<Product>();
@@ -185,7 +186,22 @@ namespace BWDB.Universal
                 topSprite.Size = size;
             }
 
-            System.Diagnostics.Debug.WriteLine("a");
+            var rect = ApplicationView.GetForCurrentView().VisibleBounds;
+
+
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                SettingDialog.MinHeight = rect.Height;
+                SettingDialog.MinWidth = rect.Width;
+                SettingDialog.MaxWidth = rect.Width;
+                SettingDialog.MaxHeight = rect.Height;
+            }
+
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                SetBuildZoomInListViewManiputationMode();
+            }
+
         }
 
 
@@ -214,6 +230,11 @@ namespace BWDB.Universal
             BuildZoomOutListView.ItemsSource = CollectionViewSource.View.CollectionGroups;
 
             BuildZoomInListView.SelectedItem = null;
+
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                SetBuildZoomInListViewManiputationMode();
+            }
         }
 
         public void GetBuildList(string Keyword)
@@ -230,6 +251,11 @@ namespace BWDB.Universal
             BuildZoomOutListView.ItemsSource = CollectionViewSource.View.CollectionGroups;
 
             BuildZoomInListView.SelectedItem = null;
+
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                SetBuildZoomInListViewManiputationMode();
+            }
         }
 
         //获取ProductList
@@ -360,5 +386,101 @@ namespace BWDB.Universal
         {
             SettingDialog.Hide();
         }
+
+        private void SplitViewContentGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+
+        }
+
+        private async void Dialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
+        {
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                //设置手机状态栏
+                var statusBar = StatusBar.GetForCurrentView();
+                await statusBar.HideAsync();
+            }
+        }
+
+        private async void Dialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
+        {
+            if (DeviceTypeState.CurrentState == Phone)
+            {
+                //设置手机状态栏
+                var statusBar = StatusBar.GetForCurrentView();
+                await statusBar.ShowAsync();
+            }
+        }
+        
+
+        private void ScrollViewer_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Velocities.Linear.X);
+
+                if (isOpeningSplitView)
+                {
+                    if (e.Velocities.Linear.X > 0)
+                    {
+                        SplitView.IsPaneOpen = true;
+                        SplitView.Focus(FocusState.Pointer);
+                        isOpeningSplitView = false;
+                        BuildZoomInListView.ItemClick += BuildZoomInListView_ItemClick;
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+
+        private void BuildZoomInListView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch)
+            {
+                if (e.Position.X <= 10)
+                {
+                    BuildZoomInListView.ItemClick -= BuildZoomInListView_ItemClick;
+                    isOpeningSplitView = true;
+                    e.Handled = true;
+                }
+            }
+        }
+        private void SetBuildZoomInListViewManiputationMode()
+        {
+            //Hack, 根据item数目选择不同的maniputationMode 实现滑动响应
+            //itemPresenter只会处理手指在item上时的滑动操作
+
+            //项目数不够多，出现空白区域的时候，禁止system（上下滚动，因为现在也用不着），然后上面的scrollviewer才能正常响应空白区的滑动操作
+            //项目数超出屏幕范围，需要上下滚动的时候，允许system，这时滑动操作由itemPresenter处理
+
+
+
+            var border = VisualTreeHelper.GetChild(BuildZoomInListView, 0);
+            var scrollviewer = VisualTreeHelper.GetChild(border, 0);
+            border = VisualTreeHelper.GetChild(scrollviewer, 0);
+            var grid = VisualTreeHelper.GetChild(border, 0);
+            var scrollContentPresenter = VisualTreeHelper.GetChild(grid, 0);
+            var itemsPresenter = (ItemsPresenter)VisualTreeHelper.GetChild(scrollContentPresenter, 0);
+
+            var list = BuildZoomInListView.Items.ToList();
+            ManipulationModes ret = ManipulationModes.System | ManipulationModes.TranslateX;
+            System.Diagnostics.Debug.WriteLine(ManipulationModes.System | ManipulationModes.TranslateX);
+
+            if (list != null)
+            {
+                if (list.Count * 65 < BuildZoomInListView.ActualHeight)
+                {
+                    ret = ManipulationModes.TranslateX;
+                }
+            }
+
+            itemsPresenter.ManipulationMode = ret;
+        }
+
     }
+
+
+
 }

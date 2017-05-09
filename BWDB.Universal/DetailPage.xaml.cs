@@ -150,7 +150,7 @@ namespace BWDB.Universal
             await InstallationDialog.ShowAsync();
         }
         
-        private void AdjustSize()
+        private async void AdjustSize()
         {
             
             if (VisualTreeHelper.GetChildrenCount(ScreenshotFlipView) == 0) return;
@@ -180,52 +180,52 @@ namespace BWDB.Universal
 
             if (selectedItem == null) return;
             //FlipViewItem中自定义的ScrollViewer
+            
             var contentPresenter = (ContentPresenter)VisualTreeHelper.GetChild(selectedItem, 0);
             grid = (Grid)VisualTreeHelper.GetChild(contentPresenter, 0);
             scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(grid, 0);
 
-            Windows.System.Threading.ThreadPoolTimer.CreateTimer(
-                async (source) =>
-                {
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        scrollViewer.ChangeView(0, 0, 1.0f, false);
-                    }
-                    );
-                }
-            , TimeSpan.FromMilliseconds(10));
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                scrollViewer.ChangeView(0f, 0f, 1.0f, true);
+
+            }
+            );
 
         }
         private void ScreenshotFlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AdjustSize();
+           AdjustSize();
 
         }
 
         private void buildPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            var rect = ApplicationView.GetForCurrentView().VisibleBounds;
+            
+
             if (DeviceFamilyState.CurrentState == Desktop )
             {
                 if (MainPage.CurrentPage.AdaptiveState.CurrentState == MainPage.CurrentPage.PhoneUI)
                 {
-                    ScreenshotDialog.MaxWidth = Window.Current.Bounds.Width;
+                    ScreenshotDialog.MaxWidth = rect .Width;
                 }
                 else
                 {
-                    ScreenshotDialog.MaxWidth = Window.Current.Bounds.Width - 70;
+                    ScreenshotDialog.MaxWidth = rect.Width - 70;
                 }
                 
-                ScreenshotDialog.MaxHeight = Window.Current.Bounds.Height - 70;
-                DetailDialog.MaxHeight = Window.Current.Bounds.Height - 70;
-                InstallationDialog.MaxHeight = Window.Current.Bounds.Height - 70;
+                ScreenshotDialog.MaxHeight = rect.Height - 70;
+                DetailDialog.MaxHeight = rect.Height - 70;
+                InstallationDialog.MaxHeight = rect.Height - 70;
             }
             else
             {
                 
-                ScreenshotDialog.MinHeight = Window.Current.Bounds.Height;
+                ScreenshotDialog.MinHeight = rect.Height;
                 ScreenshotFlipView.MinHeight = ScreenshotDialog.MinHeight;
-                ScreenshotDialog.MaxWidth = Window.Current.Bounds.Width;
-                ScreenshotDialog.MaxHeight = Window.Current.Bounds.Height;
+                ScreenshotDialog.MaxWidth = rect.Width;
+                ScreenshotDialog.MaxHeight = rect.Height;
             }
 
         }
@@ -245,6 +245,12 @@ namespace BWDB.Universal
 
         private void image_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
+
+
+            //System.Diagnostics.Debug.WriteLine(1 + (e.Delta.Scale - 1) * 10);
+
+
+            
             if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
             {
                 var image = (Image)sender;
@@ -256,7 +262,14 @@ namespace BWDB.Universal
                 var scrollBorder = (Border)VisualTreeHelper.GetParent(scrollGrid);
 
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetParent(scrollBorder);
-                scrollViewer.ChangeView(null, null, scrollViewer.ZoomFactor + delta / 480f);
+
+                var scrollCenterX = scrollViewer.ActualWidth / 2;
+                var scrollCenterY = scrollViewer.ActualHeight / 2;
+                var centerX = image.ActualWidth / 2;
+                var centerY = image.ActualHeight / 2;
+                var scale = scrollViewer.ZoomFactor + delta / 480f;
+
+                scrollViewer.ChangeView(-(scrollCenterX - (centerX * scale)), -(scrollCenterY - (centerY * scale)), scale);
                 e.Handled = true;
             }
 
@@ -265,10 +278,49 @@ namespace BWDB.Universal
 
         private void image_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            
+            var image = (Image)sender;
+            var grid = (Grid)VisualTreeHelper.GetParent(image);
+            var scrollContentPresenter = (ScrollContentPresenter)VisualTreeHelper.GetParent(grid);
+            var scrollGrid = (Grid)VisualTreeHelper.GetParent(scrollContentPresenter);
+            var scrollBorder = (Border)VisualTreeHelper.GetParent(scrollGrid);
+
+            var scrollViewer = (ScrollViewer)VisualTreeHelper.GetParent(scrollBorder);
+
             //System.Diagnostics.Debug.WriteLine(e.Velocities.Linear.X);
-           
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+
+            //if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+
+
+            var scrollCenterX = scrollViewer.ActualWidth / 2;
+            var scrollCenterY = scrollViewer.ActualHeight / 2;
+            //System.Diagnostics.Debug.WriteLine(1 + (e.Delta.Scale - 1) * 10);
+            if (e.Delta.Scale != 1)
+            {
+                var centerX = image.ActualWidth / 2;
+                var centerY = image.ActualHeight / 2;
+                var scale = scrollViewer.ZoomFactor * (1 + (e.Delta.Scale - 1) * 2);
+                
+                scrollViewer.ChangeView(
+                    
+                    -(scrollCenterX-(centerX *scale)), 
+                    -(scrollCenterY-(centerY*scale)), 
+                    scale, false);
+               
+            }
+            else
+            {
+                scrollViewer.ChangeView(
+                   scrollViewer.HorizontalOffset - e.Delta.Translation.X,
+              scrollViewer.VerticalOffset - e.Delta.Translation.Y,
+                    null, true);
+            }
+            e.Handled = true;
+
+        }
+
+        private void image_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch)
             {
                 var image = (Image)sender;
                 var grid = (Grid)VisualTreeHelper.GetParent(image);
@@ -277,15 +329,27 @@ namespace BWDB.Universal
                 var scrollBorder = (Border)VisualTreeHelper.GetParent(scrollGrid);
 
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetParent(scrollBorder);
-                scrollViewer.ChangeView(
-                    scrollViewer.HorizontalOffset - e.Velocities.Linear.X*5, 
-                    scrollViewer.VerticalOffset - e.Velocities.Linear.Y*5, 
-                    null, true);
-                e.Handled = true;
+                if (scrollViewer.ZoomFactor == 1)
+                {
+
+                    var count = ((List<Screenshot>)ScreenshotFlipView.ItemsSource).Count;
+                    var index = ScreenshotFlipView.SelectedIndex;
+
+                    if (e.Velocities.Linear.X > 0)
+                    {
+                        if (index - 1 >= 0) ScreenshotFlipView.SelectedIndex -= 1;
+
+                    }
+                    else
+                    {
+                        if (index + 1 < count) ScreenshotFlipView.SelectedIndex += 1;
+                    }
+                }
             }
-           
+
         }
-        private void image_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+
+        private async void image_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             
             var image = (Image)sender;
@@ -298,18 +362,16 @@ namespace BWDB.Universal
             var scrollViewer = (ScrollViewer)VisualTreeHelper.GetParent(scrollBorder);
             //await Task.Delay(1);
 
-            Windows.System.Threading.ThreadPoolTimer.CreateTimer(
-                async (source) =>
-                {
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        scrollViewer.ChangeView(0, 0, 1.0f, false);
-                    }
-                    );
-                }
-            , TimeSpan.FromMilliseconds(10));
-            
-            
+
+            //scrollViewer.ChangeView(0f, 0f, null, false);
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                scrollViewer.ChangeView(0f, 0f, 1.0f, true);
+
+            }
+            );
+
+
         }
 
         private void ShareButton_Click(object sender, RoutedEventArgs e)
@@ -321,15 +383,15 @@ namespace BWDB.Universal
         private void image_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             
-
+            /*
             if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
             {
-                ((Image)sender).ManipulationMode = ManipulationModes.All;
+                ((Image)sender).ManipulationMode = ManipulationModes.TranslateX & ManipulationModes.TranslateY;
             }
             else
             {
                 ((Image)sender).ManipulationMode = ManipulationModes.System;
-            }
+            }*/
 
         }
 
@@ -337,6 +399,7 @@ namespace BWDB.Universal
         {
             if (DeviceFamilyState.CurrentState == Phone)
             {
+
                 //设置手机状态栏
                 var statusBar = StatusBar.GetForCurrentView();
                 await statusBar.HideAsync();
@@ -393,5 +456,7 @@ namespace BWDB.Universal
                 await statusBar.ShowAsync();
             }
         }
+
+
     }
 }

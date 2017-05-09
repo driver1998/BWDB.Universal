@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
+using BWDB.Core;
 
 namespace BWDB.Universal
 {
@@ -332,4 +335,18 @@ namespace BWDB.Universal
             throw new NotImplementedException();
         }
     }
+
+    public class ListViewManipulationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

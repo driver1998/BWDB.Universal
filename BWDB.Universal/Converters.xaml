@@ -20,4 +20,5 @@
 
     <local:ImageHeightRawPixelConverter x:Key="ImageHeightRawPixelConverter"/>
     <local:ImageWidthRawPixelConverter x:Key="ImageWidthRawPixelConverter"/>
+    <local:ListViewManipulationConverter x:Key="ListViewManipulationConverter"/>
 </ResourceDictionary>
