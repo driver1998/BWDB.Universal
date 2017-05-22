@@ -7,6 +7,14 @@
         <ResourceDictionary>
             <Color x:Key="BWDB_AccentColor">#FF184689</Color>
             <Color x:Key="BWDB_MediumAccentColor">#CC184689</Color>
+
+            
+            <AcrylicBrush x:Key="BWDB_AccentAcrylic"
+                          FallbackColor="{StaticResource BWDB_MediumAccentColor}"
+                          TintColor="{StaticResource BWDB_AccentColor}"
+                          TintOpacity="0.8"
+                          BackgroundSource="HostBackdrop"/>
+            
             
             <SolidColorBrush x:Key="BWDB_AccentBrush" Color="{StaticResource BWDB_AccentColor}" />
             <SolidColorBrush x:Key="BWDB_MediumAccentBrush" Color="{StaticResource BWDB_MediumAccentColor}" />
@@ -14,6 +22,10 @@
                 <ResourceDictionary Source="Styles.xaml"/>
                 <ResourceDictionary Source="Converters.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            
+
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

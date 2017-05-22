@@ -22,7 +22,6 @@
                         <Setter Target="LeftPanel.Width" Value="0"/>
                         <Setter Target="LeftPageFrame.(Grid.Column)" Value="0"/>
                         <Setter Target="LeftPageFrame.(Grid.ColumnSpan)" Value="2"/>
-                        <Setter Target="PanelGrid.Visibility" Value="Collapsed"/>
                         <Setter Target="MainPageFrame.(Grid.Column)" Value="0"/>
                         <Setter Target="MainPageFrame.(Grid.ColumnSpan)" Value="2"/>
                     </VisualState.Setters>
@@ -63,13 +62,14 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            
-            
-            <Grid x:Name="PanelGrid" Grid.Column="0"/>
 
-            <Grid x:Name="LeftPageFrame" Grid.Column="0" Background="{StaticResource BWDB_MediumAccentBrush}">
 
-                <SplitView x:Name="SplitView" DisplayMode="Overlay" PaneClosed="SplitView_PaneClosed" IsPaneOpen="{Binding ElementName=hamburger, Path=IsChecked, Mode=TwoWay}"  x:FieldModifier="Public">
+            <!--Rectangle x:Name="PanelGrid" Fill="{ThemeResource SystemControlAcrylicWindowBrush}" Grid.Column="0"/-->
+
+            <Grid x:Name="LeftPageFrame" Grid.Column="0" Background="{StaticResource BWDB_AccentAcrylic}">
+
+                <SplitView
+                    x:Name="SplitView" DisplayMode="Overlay" PaneClosed="SplitView_PaneClosed" IsPaneOpen="{Binding ElementName=hamburger, Path=IsChecked, Mode=TwoWay}"  x:FieldModifier="Public">
                     <SplitView.Pane>
                         <Grid x:Name="SplitViewPaneGrid" Margin="0,48,0,0">
                             <Grid.RowDefinitions >

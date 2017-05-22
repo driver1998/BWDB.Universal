@@ -95,6 +95,7 @@ namespace BWDB.Universal
             ulong v3 = (v & 0x00000000FFFF0000L) >> 16;
 
             //RS2透明效果测试
+            /*
             if (v3 >= 15031 && DeviceTypeState.CurrentState == Desktop)
             {
                 compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
@@ -111,6 +112,7 @@ namespace BWDB.Universal
                 topSprite.Brush = compositor.CreateHostBackdropBrush();
                 
             }
+            */
 
             GetProductList();
 
@@ -177,7 +179,7 @@ namespace BWDB.Universal
         }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
+        {/*
             if (topSprite !=null)
             {
                 var size = topSprite.Size;
@@ -185,9 +187,9 @@ namespace BWDB.Universal
                 size.Y = (float)PanelGrid.ActualHeight;
                 topSprite.Size = size;
             }
-
+            */
             var rect = ApplicationView.GetForCurrentView().VisibleBounds;
-
+            
 
             if (DeviceTypeState.CurrentState == Phone)
             {

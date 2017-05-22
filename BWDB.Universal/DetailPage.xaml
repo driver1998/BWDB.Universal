@@ -233,7 +233,7 @@
                     
                 </FlipView>
 
-                <Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundAltMediumHighBrush}" x:Name="ScreenshotToolbar">
+                <Grid Grid.Row="0" Background="{ThemeResource SystemControlAcrylicMediumHighElementBrush }" x:Name="ScreenshotToolbar">
                     <TextBlock Text="{Binding ElementName=ScreenshotFlipView, Path=SelectedItem.Description}"
                                Margin="20,0,0,0" VerticalAlignment="Center" 
                                Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}"/>
